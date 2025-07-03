@@ -1,13 +1,11 @@
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-dotenv.config();
+import mongoose from "mongoose";
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log('✅ MongoDB connected successfully');
+    await mongoose.connect(`${process.env.MONGO_URI}/Drivesta`);
+    console.log(" MongoDB connected successfully!!");
   } catch (err) {
-    console.error('❌ MongoDB connection failed:', err.message);
+    console.error(" MongoDB connection failed:", err.message);
     process.exit(1);
   }
 };
