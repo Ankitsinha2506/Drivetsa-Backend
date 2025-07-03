@@ -66,7 +66,7 @@ function extractCityFromAddress(address) {
 
 export const getAllRequests = async (req, res) => {
   try {
-    const requests = await VehiclePDIRequest.find();
+    const requests = await VehiclePDIRequest.find().populate("customer", "name mobile");
     res.json({
       message: "Requests retrieved successfully",
       data: requests,
@@ -79,7 +79,7 @@ export const getAllRequests = async (req, res) => {
 export const getRequestByBookingId = async (req, res) => {
   try {
     const { bookingId } = req.params;
-    const request = await VehiclePDIRequest.findOne({ bookingId });
+    const request = await VehiclePDIRequest.findOne({ bookingId }).populate("customer", "name mobile");
 
     if (!request) {
       return res.status(404).json({ message: "Request not found" });
@@ -97,7 +97,7 @@ export const getRequestByBookingId = async (req, res) => {
 
 export const getRequestById = async (req, res) => {
   try {
-    const request = await VehiclePDIRequest.findById(req.params.id);
+    const request = await VehiclePDIRequest.findById(req.params.id).populate("customer", "name mobile");
     if (!request) return res.status(404).json({ message: "Request not found" });
     res.json({
       message: "Request fetched successfully",

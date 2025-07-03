@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const vehiclePDIRequestSchema = new mongoose.Schema({
-  customer: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer', required: true },
+  customer: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
   bookingId: { type: String, unique: true, required: true },
   brand: { type: String, required: true },
   model: { type: String, required: true },
