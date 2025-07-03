@@ -1,7 +1,7 @@
 import VehiclePDIRequest from "../models/VehiclePDIRequest.js";
 import { getCarImageURL } from "../utils/getCarImageURL.js";
 import variantDetailsMap from "../utils/variantDetailsMap.js";
-import BookingCounter from "../models/userModel.js";
+import BookingCounter from "../models/BookingCounter.js";
 import getCityPrefix from "../utils/getCityPrefix.js";
 
 export const createRequest = async (req, res) => {
@@ -21,16 +21,15 @@ export const createRequest = async (req, res) => {
 
     // ✅ Step 3: Handle BookingCounter
     let counterDoc = await BookingCounter.findOne();
-    console.log("Raw counterDoc:", counterDoc); // <== Add this for debugging
-    
-    if (!counterDoc) {
-      counterDoc = await BookingCounter.create({ globalCount: 1 });
-    } else {
-      counterDoc.globalCount += 1;
-      await counterDoc.save();
-    }
 
-    console.log("counterDoc.globalCount:", counterDoc.globalCount); // ✅ Debug
+if (!counterDoc) {
+  counterDoc = await BookingCounter.create({ globalCount: 1 });
+} else {
+  counterDoc.globalCount += 1;
+  await counterDoc.save();
+}
+
+console.log("counterDoc.globalCount:", counterDoc.globalCount);
 
     // ✅ Step 4: Generate Booking ID
     const bookingId = `${getCityPrefix(address)}2105${String(
