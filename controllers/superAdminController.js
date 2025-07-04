@@ -1,4 +1,5 @@
 import User from "../models/userModel.js";
+
 export const getusers = async (req, res) => {
   try {
      

@@ -2,7 +2,6 @@ import User from "../models/userModel.js";
 import { validationResult } from "express-validator";
 import generateToken from "../utils/generateToken.js";
 import twilio from "twilio";
-
 import client from "../utils/twilioClient.js";
 import { generateOtp } from "../utils/generateOtp.js";
 

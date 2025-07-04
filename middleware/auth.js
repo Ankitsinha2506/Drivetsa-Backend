@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import User from "../models/userModel.js"; // Adjust the path as necessary
+import User from "../models/userModel.js"; 
 
 const auth = (role = []) => {
   if (typeof role === "string") role = [role];
@@ -22,7 +22,7 @@ const auth = (role = []) => {
       console.log("Decoded user:", user);
       if (!user) return res.status(401).json({ message: "User not found" });
 
-      req.customer = user; // ✅ So controller can access req.customer._id
+      req.customer = user; //So controller can access req.customer._id
       next();
     } catch (err) {
       res.status(401).json({ message: "Invalid or expired token" });

@@ -3,6 +3,7 @@ import authRoutes from "./routes/userRouter.js";
 import cookieParser from "cookie-parser";
 import SuperAdminRoutes from "./routes/superadminRouter.js";
 import vehiclePDI from "./routes/vehiclePDI.routes.js";
+import vehicleRoutes from "./routes/vehicleRoutes.js";
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/superadmin", SuperAdminRoutes); // Assuming superadmin routes are also under authRoutes
 app.use("/api/inspections", vehiclePDI);
+app.use("/api/addvehicles", vehicleRoutes);
 
 app.get("/", (req, res) => {
   res.send(" API is running...");

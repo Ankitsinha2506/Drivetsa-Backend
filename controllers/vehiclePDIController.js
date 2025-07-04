@@ -1,49 +1,47 @@
 import VehiclePDIRequest from "../models/VehiclePDIRequest.js";
-import { getCarImageURL } from "../utils/getCarImageURL.js";
-import variantDetailsMap from "../utils/variantDetailsMap.js";
 import BookingCounter from "../models/BookingCounter.js";
-import getCityPrefix from "../utils/getCityPrefix.js";
+import Vehicle from "../models/Vehicle.js";
+import getCityPrefix from "../utils/getCityPrefix.js"; 
 
 export const createRequest = async (req, res) => {
   try {
-    const { brand, model, variant, address } = req.body;
-    const customerId = req.customer._id; // ✅ Ensure auth middleware sets this
+    const { brand, model, address } = req.body;
+    const customerId = req.customer._id;
 
-    // ✅ Step 1: Get image
-    const imageUrl = getCarImageURL(brand, model);
-
-    // ✅ Step 2: Get variant info
-    const variantKey = `${brand}-${model} ${variant}`;
-    const variantInfo = variantDetailsMap[variantKey];
-    if (!variantInfo) {
-      return res.status(400).json({ message: "Variant details not found." });
+    //Get vehicle info from DB using brand & model
+    const vehicleDoc = await Vehicle.findOne({ brand, model });
+    if (!vehicleDoc) {
+      return res
+        .status(404)
+        .json({ message: "Vehicle not found for this brand and model" });
     }
 
-    // ✅ Step 3: Handle BookingCounter
+    const imageUrl = vehicleDoc.imageUrl;
+    const fuelType = vehicleDoc.fuelType;
+    const transmissionType = vehicleDoc.transmissionType;
+
+    //Handle BookingCounter
     let counterDoc = await BookingCounter.findOne();
+    if (!counterDoc) {
+      counterDoc = await BookingCounter.create({ globalCount: 1 });
+    } else {
+      counterDoc.globalCount += 1;
+      await counterDoc.save();
+    }
 
-if (!counterDoc) {
-  counterDoc = await BookingCounter.create({ globalCount: 1 });
-} else {
-  counterDoc.globalCount += 1;
-  await counterDoc.save();
-}
-
-console.log("counterDoc.globalCount:", counterDoc.globalCount);
-
-    // ✅ Step 4: Generate Booking ID
+    //Generate Booking ID
     const bookingId = `${getCityPrefix(address)}2105${String(
       counterDoc.globalCount
     ).padStart(4, "0")}`;
 
-    // ✅ Step 5: Save request
+    //Save new PDI request
     const newRequest = new VehiclePDIRequest({
       ...req.body,
       customer: customerId,
       bookingId,
       imageUrl,
-      transmissionType: variantInfo.transmissionType,
-      fuelType: variantInfo.fuelType,
+      fuelType,
+      transmissionType,
     });
 
     await newRequest.save();
@@ -59,14 +57,17 @@ console.log("counterDoc.globalCount:", counterDoc.globalCount);
 };
 
 // Utility function (if needed elsewhere, consider exporting)
-function extractCityFromAddress(address) {
-  const parts = address.split(",").map((p) => p.trim());
-  return parts[parts.length - 1] || "GEN";
-}
+// function extractCityFromAddress(address) {
+//   const parts = address.split(",").map((p) => p.trim());
+//   return parts[parts.length - 1] || "GEN";
+// }
 
 export const getAllRequests = async (req, res) => {
   try {
-    const requests = await VehiclePDIRequest.find().populate("customer", "name mobile");
+    const requests = await VehiclePDIRequest.find().populate(
+      "customer",
+      "name mobile"
+    );
     res.json({
       message: "Requests retrieved successfully",
       data: requests,
@@ -79,7 +80,10 @@ export const getAllRequests = async (req, res) => {
 export const getRequestByBookingId = async (req, res) => {
   try {
     const { bookingId } = req.params;
-    const request = await VehiclePDIRequest.findOne({ bookingId }).populate("customer", "name mobile");
+    const request = await VehiclePDIRequest.findOne({ bookingId }).populate(
+      "customer",
+      "name mobile"
+    );
 
     if (!request) {
       return res.status(404).json({ message: "Request not found" });
@@ -97,7 +101,10 @@ export const getRequestByBookingId = async (req, res) => {
 
 export const getRequestById = async (req, res) => {
   try {
-    const request = await VehiclePDIRequest.findById(req.params.id).populate("customer", "name mobile");
+    const request = await VehiclePDIRequest.findById(req.params.id).populate(
+      "customer",
+      "name mobile"
+    );
     if (!request) return res.status(404).json({ message: "Request not found" });
     res.json({
       message: "Request fetched successfully",
@@ -110,26 +117,43 @@ export const getRequestById = async (req, res) => {
 
 export const updateRequest = async (req, res) => {
   try {
-    const { brand, variant } = req.body;
-    const imageUrl = getCarImageURL(brand, variant);
-
-    const updatedRequest = await VehiclePDIRequest.findByIdAndUpdate(
-      req.params.id,
-      { ...req.body, imageUrl },
-      { new: true }
-    );
-
-    if (!updatedRequest)
+    const request = await VehiclePDIRequest.findById(req.params.id);
+    if (!request) {
       return res.status(404).json({ message: "Request not found" });
+    }
 
-    res.json({
-      message: "Request updated successfully",
-      data: updatedRequest,
+    //Update fields conditionally if provided
+    request.brand = req.body.brand || request.brand;
+    request.model = req.body.model || request.model;
+    request.variant = req.body.variant || request.variant;
+    request.transmissionType = req.body.transmissionType || request.transmissionType;
+    request.fuelType = req.body.fuelType || request.fuelType;
+    request.address = req.body.address || request.address;
+    request.carStatus = req.body.carStatus || request.carStatus;
+    request.date = req.body.date || request.date;
+    request.notes = req.body.notes || request.notes;
+
+    //Update image from Vehicle table if brand/model changed
+    const vehicle = await Vehicle.findOne({
+      brand: request.brand,
+      model: request.model,
+    });
+    if (vehicle && vehicle.imageUrl) {
+      request.imageUrl = vehicle.imageUrl;
+    }
+
+    const updated = await request.save();
+
+    res.status(200).json({
+      message: "PDI Request updated successfully",
+      data: updated,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Update error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 export const deleteRequest = async (req, res) => {
   try {
