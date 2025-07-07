@@ -1,9 +1,10 @@
 import express from "express";
-import authRoutes from "./routes/userRouter.js";
+
 import cookieParser from "cookie-parser";
-import SuperAdminRoutes from "./routes/superadminRouter.js";
-import vehiclePDI from "./routes/vehiclePDI.routes.js";
-import vehicleRoutes from "./routes/vehicleRoutes.js";
+import userRoutes from "./routes/Customer/userRouter.js";
+import vehiclePDI from "./routes/Customer/vehiclePDI.routes.js";
+import vehicleRoutes from "./routes/SuperAdmin/vehicleRoutes.js";
+import SuperAdminRoutes from "./routes/SuperAdmin/superAdminRouter.js";
 
 const app = express();
 
@@ -14,7 +15,7 @@ app.use(express.json());
 app.use(cookieParser());
 // Base route
 // app.use('/api/auth', authRoutes);
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", userRoutes);
 app.use("/api/superadmin", SuperAdminRoutes); // Assuming superadmin routes are also under authRoutes
 app.use("/api/inspections", vehiclePDI);
 app.use("/api/addvehicles", vehicleRoutes);

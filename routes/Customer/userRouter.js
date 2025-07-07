@@ -4,9 +4,8 @@ import {
   registerUser,
   loginUser,
   logoutUser,
-} from "../controllers/authController.js";
-import { verifyOtp } from "../config/verifyOtp.js";
-
+} from "../../controllers/Customer/authController.js";
+import { verifyOtp } from "../../config/verifyOtp.js";
 
 const router = express.Router();
 
@@ -23,7 +22,5 @@ router.post("/login", loginValidation, loginUser);
 router.post("/logout", logoutUser);
 
 router.post("/verify-otp", verifyOtp);
-
-
 
 export default router;

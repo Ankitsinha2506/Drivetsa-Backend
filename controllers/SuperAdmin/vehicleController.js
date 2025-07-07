@@ -1,4 +1,4 @@
-import Vehicle from "../models/Vehicle.js";
+import Vehicle from "../../models/SuperAdmin/Vehicle.js";
 
 // Add new vehicle
 export const createVehicle = async (req, res) => {
@@ -13,7 +13,7 @@ export const createVehicle = async (req, res) => {
 
     //Prevent duplicates
     const existing = await Vehicle.findOne({ brand, model, variant });
- 
+
     if (existing) {
       return res.status(400).json({ message: "Vehicle already exists." });
     }
@@ -25,7 +25,7 @@ export const createVehicle = async (req, res) => {
       variant,
       fuelType,
       transmissionType,
-      imageUrl, 
+      imageUrl,
     });
 
     console.log("New vehicle created:", newVehicle);

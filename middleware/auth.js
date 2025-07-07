@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import User from "../models/userModel.js"; 
+import User from "../models/Customer/userModel.js";
 
 const auth = (role = []) => {
   if (typeof role === "string") role = [role];

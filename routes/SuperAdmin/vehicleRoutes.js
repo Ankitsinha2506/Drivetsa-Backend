@@ -1,11 +1,11 @@
 import express from "express";
-import upload from "../middleware/upload.js";
+import upload from "../../middleware/upload.js";
 import {
   createVehicle,
   getAllVehicles,
   getVehicleById,
   deleteVehicle,
-} from "../controllers/vehicleController.js";
+} from "../../controllers/SuperAdmin/vehicleController.js";
 
 const router = express.Router();
 
