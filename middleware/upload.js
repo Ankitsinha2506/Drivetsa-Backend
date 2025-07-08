@@ -1,6 +1,6 @@
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-import cloudinary from "../config/cloudinary.js"; 
+import cloudinary from "../config/cloudinary.js";
 
 const storage = new CloudinaryStorage({
   cloudinary,
@@ -10,6 +10,7 @@ const storage = new CloudinaryStorage({
     transformation: [{ width: 800, height: 600, crop: "limit" }],
   },
 });
+
 
 const upload = multer({ storage });
 

@@ -3,10 +3,21 @@ import Vehicle from "../../models/SuperAdmin/Vehicle.js";
 // Add new vehicle
 export const createVehicle = async (req, res) => {
   try {
-    const { brand, model, variant, fuelType, transmissionType } = req.body;
+    const {
+      brand,
+      model,
+      variant,
+      fuelType,
+      transmissionType,
+      BHPs,
+      Airbags,
+      Mileage,
+      NCAP,
+    } = req.body;
 
     //uploaded image URL from Cloudinary via Multer
     const imageUrl = req.file?.path;
+
     if (!imageUrl) {
       return res.status(400).json({ message: "Image upload is required." });
     }
@@ -25,10 +36,14 @@ export const createVehicle = async (req, res) => {
       variant,
       fuelType,
       transmissionType,
+      BHPs,
+      Airbags,
+      Mileage,
+      NCAP,
       imageUrl,
     });
 
-    console.log("New vehicle created:", newVehicle);
+    // console.log("New vehicle created:", newVehicle);
 
     res.status(201).json({
       message: "Vehicle added successfully",

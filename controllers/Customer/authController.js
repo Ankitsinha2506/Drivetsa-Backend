@@ -5,7 +5,6 @@ import client from "../../utils/twilioClient.js";
 import { generateOtp } from "../../utils/generateOtp.js";
 import userModel from "../../models/Customer/userModel.js";
 
-
 export const registerUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty())
@@ -124,10 +123,10 @@ export const loginUser = async (req, res) => {
         to: `+91${mobile}`,
       });
 
-      console.log("FROM:", process.env.TWILIO_PHONE_NUMBER);
+      // console.log("FROM:", process.env.TWILIO_PHONE_NUMBER);
 
       return res.status(200).json({
-        message: "OTP sent to your mobile number" + otp,
+        message: "OTP sent to your mobile number : " + otp,
         mobile: user.mobile,
       });
     } catch (error) {
